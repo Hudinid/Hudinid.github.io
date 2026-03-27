@@ -18,23 +18,13 @@
             height: 100vh;
             overflow: hidden;
         }
-        h1 { 
-            margin-bottom: 5px; 
-            font-weight: 400; 
-            letter-spacing: 1px;
-        }
-        p { 
-            margin-top: 0; 
-            margin-bottom: 15px;
-            font-size: 15px; 
-            color: #85a3b8; 
-        }
+        h1 { margin-bottom: 5px; font-weight: 400; letter-spacing: 1px; }
+        p { margin-top: 0; margin-bottom: 15px; font-size: 15px; color: #85a3b8; }
         canvas {
             background-color: #e6edf4;
             box-shadow: 0px 15px 40px rgba(92, 124, 146, 0.15);
             border-radius: 12px;
             border: 2px solid #d5e1ec;
-            /* Added to ensure it fits on smaller laptop screens without scrolling */
             max-width: 90vw;
             max-height: 80vh; 
         }
@@ -51,84 +41,141 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Game objects
         const player = {
-            x: 485, y: 500, width: 30, height: 30, // Spawns in bottom center
-            vx: 0, vy: 0, speed: 6, jumpPower: -14, // Slightly faster, jumps slightly higher
-            isGrounded: false, 
-            color: '#8bb0d4' 
+            x: 485, y: 500, width: 30, height: 30, 
+            vx: 0, vy: 0, speed: 6, jumpPower: -14, 
+            isGrounded: false, color: '#8bb0d4' 
         };
 
-        const gravity = 0.5; // Slightly lower gravity for more "floaty" comfortable jumps
+        const gravity = 0.5; 
         const keys = {};
-        
         let activePortal = null; 
+        let particles = [];
+        
+        // --- PARALLAX CLOUDS ---
+        const clouds = [];
+        for (let i = 0; i < 6; i++) {
+            clouds.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * (canvas.height / 2), // Keep in the top half
+                width: Math.random() * 120 + 60,
+                height: Math.random() * 30 + 20,
+                speed: Math.random() * 0.5 + 0.1, // Drift slowly left
+                opacity: Math.random() * 0.4 + 0.2
+            });
+        }
 
-        // Level Design: New larger layout
         const platforms = [
-            { x: 0, y: 560, width: 1000, height: 40, color: '#c1d4e3' },   // Floor
-            { x: 100, y: 400, width: 200, height: 15, color: '#d5e1ec' },  // Middle Left
-            { x: 700, y: 400, width: 200, height: 15, color: '#d5e1ec' },  // Middle Right
-            { x: 400, y: 240, width: 200, height: 15, color: '#d5e1ec' }   // Top Center
+            { x: 0, y: 560, width: 1000, height: 40, color: '#c1d4e3' },   
+            { x: 100, y: 400, width: 200, height: 15, color: '#d5e1ec' },  
+            { x: 700, y: 400, width: 200, height: 15, color: '#d5e1ec' },  
+            { x: 400, y: 240, width: 200, height: 15, color: '#d5e1ec' }   
         ];
 
-        // Level Design: Portals matched to new platforms
         const portals = [
-            { x: 175, y: 330, width: 50, height: 70, color: '#a6c6e1', label: 'About', link: 'about.html' },     // On Middle Left
-            { x: 775, y: 330, width: 50, height: 70, color: '#b8d4e8', label: 'Contact', link: 'contact.html' }, // On Middle Right
-            { x: 475, y: 170, width: 50, height: 70, color: '#a6c6e1', label: 'Projects', link: 'projects.html' } // On Top Center
+            { x: 175, y: 330, width: 50, height: 70, color: '#a6c6e1', label: 'About', link: 'about.html' },     
+            { x: 775, y: 330, width: 50, height: 70, color: '#b8d4e8', label: 'Contact', link: 'contact.html' }, 
+            { x: 475, y: 170, width: 50, height: 70, color: '#a6c6e1', label: 'Projects', link: 'projects.html' } 
         ];
 
-        // Input listeners
+        let audioCtx;
+        function playSound(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'jump') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'portal') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        function spawnDust(x, y) {
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() * -2) - 0.5,
+                    life: 1.0, size: Math.random() * 4 + 2
+                });
+            }
+        }
+
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
-        // AABB Collision detection
         function checkCollision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
+            return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
         }
 
         function update() {
-            // Horizontal movement
+            let wasGrounded = player.isGrounded;
+
             if (keys['KeyA']) player.vx = -player.speed;
             else if (keys['KeyD']) player.vx = player.speed;
             else player.vx = 0;
 
-            // Jumping
             if (keys['KeyW'] && player.isGrounded) {
                 player.vy = player.jumpPower;
                 player.isGrounded = false;
+                playSound('jump'); 
             }
 
-            // Apply gravity
             player.vy += gravity;
-
-            // Update positions
             player.x += player.vx;
             player.y += player.vy;
 
-            // Screen boundaries
             if (player.x < 0) player.x = 0;
             if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
 
-            // Platform collisions
             player.isGrounded = false;
             for (let plat of platforms) {
-                if (player.vy > 0 && 
-                    player.y + player.height >= plat.y && 
+                if (player.vy > 0 && player.y + player.height >= plat.y && 
                     player.y + player.height <= plat.y + player.vy + 1 &&
-                    player.x + player.width > plat.x && 
-                    player.x < plat.x + plat.width) {
+                    player.x + player.width > plat.x && player.x < plat.x + plat.width) {
                         player.isGrounded = true;
                         player.vy = 0;
                         player.y = plat.y - player.height;
                 }
             }
 
-            // Portal overlapping detection
+            if (!wasGrounded && player.isGrounded) {
+                spawnDust(player.x + player.width / 2, player.y + player.height);
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+                if (p.life <= 0) particles.splice(i, 1); 
+            }
+
+            // Update Clouds
+            for (let cloud of clouds) {
+                cloud.x -= cloud.speed;
+                if (cloud.x + cloud.width < 0) { // Reset to right side when off screen
+                    cloud.x = canvas.width;
+                    cloud.y = Math.random() * (canvas.height / 2);
+                }
+            }
+
             activePortal = null;
             for (let portal of portals) {
                 if (checkCollision(player, portal)) {
@@ -137,70 +184,70 @@
                 }
             }
 
-            // Handle pressing Enter
             if (activePortal && keys['Enter']) {
                 keys['Enter'] = false; 
+                playSound('portal'); 
                 
-                let go = confirm("Navigate to: " + activePortal.label + " page?");
-                if(go) {
-                    // window.location.href = activePortal.link;
-                    alert("Pretending to load " + activePortal.link + "!");
-                    
-                    // Reset player to the center floor spawn point
-                    player.x = 485; 
-                    player.y = 500;
-                    player.vx = 0;
-                    player.vy = 0;
-                }
+                setTimeout(() => {
+                    // This now actually loads the other HTML files!
+                    window.location.href = activePortal.link; 
+                }, 300); // 300ms delay so the sound has time to play
             }
         }
 
         function draw() {
-            // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Platforms
+            // Draw Parallax Clouds
+            for (let cloud of clouds) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${cloud.opacity})`;
+                ctx.beginPath();
+                // If roundRect isn't supported in very old browsers, this falls back safely
+                if (ctx.roundRect) {
+                    ctx.roundRect(cloud.x, cloud.y, cloud.width, cloud.height, 20);
+                } else {
+                    ctx.fillRect(cloud.x, cloud.y, cloud.width, cloud.height);
+                }
+                ctx.fill();
+            }
+
             for (let plat of platforms) {
                 ctx.fillStyle = plat.color;
                 ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
-                
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.fillRect(plat.x, plat.y, plat.width, 3);
             }
 
-            // Draw Portals
             for (let portal of portals) {
                 ctx.fillStyle = portal.color;
                 ctx.fillRect(portal.x, portal.y, portal.width, portal.height);
-                
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
                 ctx.fillRect(portal.x + 4, portal.y + 4, portal.width - 8, portal.height - 8);
 
                 ctx.fillStyle = '#5c7c92'; 
-                ctx.font = 'bold 16px Segoe UI, sans-serif'; // Increased font size slightly
+                ctx.font = 'bold 16px Segoe UI, sans-serif'; 
                 ctx.textAlign = 'center';
                 ctx.fillText(portal.label, portal.x + portal.width / 2, portal.y - 15);
 
-                // Draw "Press Enter!" if active
                 if (portal === activePortal) {
                     ctx.fillStyle = '#89a8c2'; 
                     ctx.font = 'bold 14px Segoe UI, sans-serif';
-                    
                     let floatOffset = Math.sin(Date.now() / 200) * 3; 
-                    
                     ctx.fillText("Press Enter!", portal.x + portal.width / 2, portal.y - 35 + floatOffset);
                 }
             }
 
-            // Draw Player
+            for (let p of particles) {
+                ctx.fillStyle = `rgba(180, 200, 220, ${p.life})`; 
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            }
+
             ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, player.width, player.height);
-            
             ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.fillRect(player.x + 2, player.y + 2, player.width - 4, 8);
         }
 
-        // Main game loop
         function gameLoop() {
             update();
             draw();

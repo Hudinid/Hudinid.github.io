@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Projects</title>
+    <style>
+        body {
+            background-color: #f4f8fb;
+            color: #5c7c92;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { color: #4a667a; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        .card {
+            background-color: #e6edf4;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 20px rgba(92, 124, 146, 0.1);
+            border: 2px solid #d5e1ec;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #a6c6e1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .back-btn:hover { background-color: #8bb0d4; }
+    </style>
+</head>
+<body>
+    <h1>Featured Projects</h1>
+    <div class="grid">
+        <div class="card">
+            <h3>Project One</h3>
+            <p>A description of a super cool app or website you built.</p>
+        </div>
+        <div class="card">
+            <h3>Project Two</h3>
+            <p>Another amazing piece of software showcasing your skills.</p>
+        </div>
+    </div>
+    <a href="index.html" class="back-btn">← Return to Hub</a>
+</body>
+</html>

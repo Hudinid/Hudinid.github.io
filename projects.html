@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Projects</title>
+    <title>Experience & Projects</title>
     <style>
         body {
-            background-color: #f4f8fb;
+            background-color: #e0e4e8; 
             color: #5c7c92;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -15,27 +15,47 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
         }
-        h1 { color: #4a667a; }
+        h1 { color: #4a667a; margin-bottom: 10px; text-align: center;}
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+        .skill-badge {
+            background-color: #a6c6e1;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
         }
         .card {
             background-color: #e6edf4;
-            padding: 20px;
+            padding: 25px;
             border-radius: 12px;
-            box-shadow: 0px 10px 20px rgba(92, 124, 146, 0.1);
+            box-shadow: 0px 10px 20px rgba(92, 124, 146, 0.15);
             border: 2px solid #d5e1ec;
-            text-align: center;
+            text-align: left;
         }
+        .card h3 { margin-top: 0; color: #4a667a; margin-bottom: 5px; }
+        .card .date { font-size: 13px; color: #89a8c2; margin-bottom: 15px; display: block; }
+        ul { padding-left: 20px; margin-bottom: 0; }
+        li { margin-bottom: 8px; line-height: 1.4; }
         .back-btn {
             display: inline-block;
-            margin-top: 30px;
+            margin-top: 40px;
             padding: 10px 20px;
             background-color: #a6c6e1;
             color: white;
@@ -48,17 +68,52 @@
     </style>
 </head>
 <body>
-    <h1>Featured Projects</h1>
+    <h1>Experience & Projects</h1>
+    
+    <div class="skills-container">
+        <span class="skill-badge">C / C++</span>
+        <span class="skill-badge">Python</span>
+        <span class="skill-badge">Java</span>
+        <span class="skill-badge">Machine Learning</span>
+        <span class="skill-badge">Object-Oriented Programming</span>
+        <span class="skill-badge">Git Version Control</span>
+    </div>
+
     <div class="grid">
         <div class="card">
-            <h3>Project One</h3>
-            <p>A description of a super cool app or website you built.</p>
+            <h3>Software Engineering Intern @ Siemens</h3>
+            <span class="date">Jan 2025 - Present</span>
+            <ul>
+                <li>Engineered a performance optimization feature for NXCAD functions, reducing execution time by 20% and improving overall system latency.</li>
+                <li>Leveraged Siemens' proprietary Object-Oriented Programming (OOP) framework to architect scalable features.</li>
+            </ul>
         </div>
         <div class="card">
-            <h3>Project Two</h3>
-            <p>Another amazing piece of software showcasing your skills.</p>
+            <h3>Research Intern @ Cal Poly Pomona</h3>
+            <span class="date">Nov 2020 - Feb 2023</span>
+            <ul>
+                <li>Developed Smart Tab Predictor, a Chrome extension assisting browser tab management using Machine Learning.</li>
+                <li>Published research at the 2nd International Conference on Machine Learning Techniques (MLTEC 2021) and the International Journal of Information Technology (IJIT 2022).</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Coding Mentor @ Coding Minds Academy</h3>
+            <span class="date">Jul 2023 - Oct 2023</span>
+            <ul>
+                <li>Taught children ages 7-14 Python, C++, Java, and Roblox Studio.</li>
+                <li>Guided students through the full software development lifecycle to create final capstone projects.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Laser Guitar Hero</h3>
+            <span class="date">Sep 2023 - Dec 2023</span>
+            <ul>
+                <li>Created a program using the Arduino IDE that detected finger placement via laser sensors.</li>
+                <li>Utilized beeper sound libraries to replicate modern pop songs using Arduino's timing system.</li>
+            </ul>
         </div>
     </div>
+    
     <a href="index.html" class="back-btn">← Return to Hub</a>
 </body>
 </html>

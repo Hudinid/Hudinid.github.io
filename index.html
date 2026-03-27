@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pastel Platformer Portfolio</title>
+    <title>Brian Hu - Portfolio</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #f4f8fb;
+            background-color: #e0e4e8; 
             color: #5c7c92;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Moved away from absolute center */
+            padding-top: 8vh; /* Pushes content down slightly from the top */
             height: 100vh;
+            box-sizing: border-box;
             overflow: hidden;
         }
         h1 { margin-bottom: 5px; font-weight: 400; letter-spacing: 1px; }
-        p { margin-top: 0; margin-bottom: 15px; font-size: 15px; color: #85a3b8; }
+        p { margin-top: 0; margin-bottom: 15px; font-size: 15px; color: #728b9f; }
         canvas {
             background-color: #e6edf4;
-            box-shadow: 0px 15px 40px rgba(92, 124, 146, 0.15);
+            box-shadow: 0px 15px 40px rgba(92, 124, 146, 0.25); 
             border-radius: 12px;
             border: 2px solid #d5e1ec;
             max-width: 90vw;
@@ -52,16 +54,15 @@
         let activePortal = null; 
         let particles = [];
         
-        // --- PARALLAX CLOUDS ---
         const clouds = [];
         for (let i = 0; i < 6; i++) {
             clouds.push({
                 x: Math.random() * canvas.width,
-                y: Math.random() * (canvas.height / 2), // Keep in the top half
+                y: Math.random() * (canvas.height / 2),
                 width: Math.random() * 120 + 60,
                 height: Math.random() * 30 + 20,
-                speed: Math.random() * 0.5 + 0.1, // Drift slowly left
-                opacity: Math.random() * 0.4 + 0.2
+                speed: Math.random() * 0.5 + 0.1,
+                opacity: Math.random() * 0.4 + 0.6 
             });
         }
 
@@ -167,10 +168,9 @@
                 if (p.life <= 0) particles.splice(i, 1); 
             }
 
-            // Update Clouds
             for (let cloud of clouds) {
                 cloud.x -= cloud.speed;
-                if (cloud.x + cloud.width < 0) { // Reset to right side when off screen
+                if (cloud.x + cloud.width < 0) {
                     cloud.x = canvas.width;
                     cloud.y = Math.random() * (canvas.height / 2);
                 }
@@ -189,20 +189,17 @@
                 playSound('portal'); 
                 
                 setTimeout(() => {
-                    // This now actually loads the other HTML files!
                     window.location.href = activePortal.link; 
-                }, 300); // 300ms delay so the sound has time to play
+                }, 300);
             }
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Parallax Clouds
             for (let cloud of clouds) {
                 ctx.fillStyle = `rgba(255, 255, 255, ${cloud.opacity})`;
                 ctx.beginPath();
-                // If roundRect isn't supported in very old browsers, this falls back safely
                 if (ctx.roundRect) {
                     ctx.roundRect(cloud.x, cloud.y, cloud.width, cloud.height, 20);
                 } else {

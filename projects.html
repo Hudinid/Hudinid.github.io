@@ -39,7 +39,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
         }
         .card {
             background-color: #e6edf4;
@@ -48,8 +48,15 @@
             box-shadow: 0px 10px 20px rgba(92, 124, 146, 0.15);
             border: 2px solid #d5e1ec;
             text-align: left;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .card h3 { margin-top: 0; color: #4a667a; margin-bottom: 5px; }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 15px 25px rgba(92, 124, 146, 0.25);
+        }
+        .card h3 { margin-top: 0; margin-bottom: 5px; }
+        .card h3 a { color: #4a667a; text-decoration: none; }
+        .card h3 a:hover { text-decoration: underline; }
         .card .date { font-size: 13px; color: #89a8c2; margin-bottom: 15px; display: block; }
         ul { padding-left: 20px; margin-bottom: 0; }
         li { margin-bottom: 8px; line-height: 1.4; }
@@ -80,6 +87,27 @@
     </div>
 
     <div class="grid">
+        <!-- New: Kept Letter -->
+        <div class="card">
+            <h3><a href="https://hudinid.github.io/kept-letter/" target="_blank">Kept Letter ↗</a></h3>
+            <span class="date">2026</span>
+            <ul>
+                <li>Developed a serverless web application using Vanilla JavaScript, HTML, and CSS, leveraging Firebase Firestore to store and retrieve digital letters via unique access codes.</li>
+                <li>Engineered a secure image upload pipeline by integrating a Cloudflare Worker proxy to route user photos to the ImgBB API, implementing strict client-side file validation.</li>
+                <li>Designed a responsive, state-driven front-end featuring real-time elapsed-time algorithms and custom CSS keyframe animations.</li>
+            </ul>
+        </div>
+
+        <!-- New: Courier Merchandise -->
+        <div class="card">
+            <h3><a href="https://redathena.itch.io/courier-merchandise" target="_blank">Courier Merchandise ↗</a></h3>
+            <span class="date">2026</span>
+            <ul>
+                <li>Designed and developed a strategic shop-management simulation game, successfully preparing it for release on itch.io.</li>
+                <li>Authored comprehensive game design documents, managed product backlogs, and designed promotional assets including logos and banners.</li>
+            </ul>
+        </div>
+
         <div class="card">
             <h3>Software Engineering Intern @ Siemens</h3>
             <span class="date">Jan 2025 - Present</span>
@@ -88,6 +116,7 @@
                 <li>Leveraged Siemens' proprietary Object-Oriented Programming (OOP) framework to architect scalable features.</li>
             </ul>
         </div>
+
         <div class="card">
             <h3>Research Intern @ Cal Poly Pomona</h3>
             <span class="date">Nov 2020 - Feb 2023</span>
@@ -96,6 +125,7 @@
                 <li>Published research at the 2nd International Conference on Machine Learning Techniques (MLTEC 2021) and the International Journal of Information Technology (IJIT 2022).</li>
             </ul>
         </div>
+
         <div class="card">
             <h3>Coding Mentor @ Coding Minds Academy</h3>
             <span class="date">Jul 2023 - Oct 2023</span>
@@ -104,6 +134,7 @@
                 <li>Guided students through the full software development lifecycle to create final capstone projects.</li>
             </ul>
         </div>
+
         <div class="card">
             <h3>Laser Guitar Hero</h3>
             <span class="date">Sep 2023 - Dec 2023</span>
